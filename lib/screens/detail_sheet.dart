@@ -238,7 +238,7 @@ class _ServicoOption extends StatelessWidget {
                     child: Text(servico.nome, style: bodyFont(fontSize: 14.5, weight: FontWeight.w700)),
                   ),
                   Text(
-                    brl(servico.preco * (selected ? quantidade : 1)),
+                    brl(servico.preco),
                     style: headingFont(fontSize: 17),
                   ),
                 ],
@@ -249,24 +249,44 @@ class _ServicoOption extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.only(top: 10),
                 decoration: BoxDecoration(border: Border(top: BorderSide(color: AppColors.divider))),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
                   children: [
-                    Text('Quantidade', style: bodyFont(fontSize: 13, weight: FontWeight.w700)),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        RoundStepperButton(icon: Icons.remove, onPressed: onDec),
-                        SizedBox(
-                          width: 34,
-                          child: Text(
-                            '$quantidade',
-                            textAlign: TextAlign.center,
-                            style: headingFont(fontSize: 16),
-                          ),
+                        Text('Quantidade', style: bodyFont(fontSize: 13, weight: FontWeight.w700)),
+                        Row(
+                          children: [
+                            RoundStepperButton(icon: Icons.remove, onPressed: onDec),
+                            SizedBox(
+                              width: 34,
+                              child: Text(
+                                '$quantidade',
+                                textAlign: TextAlign.center,
+                                style: headingFont(fontSize: 16),
+                              ),
+                            ),
+                            RoundStepperButton(icon: Icons.add, onPressed: onInc),
+                          ],
                         ),
-                        RoundStepperButton(icon: Icons.add, onPressed: onInc),
                       ],
                     ),
+                    if (quantidade > 1) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Subtotal ($quantidade × ${brl(servico.preco)})',
+                            style: bodyFont(fontSize: 12.5, color: textMuted(0.6)),
+                          ),
+                          Text(
+                            brl(servico.preco * quantidade),
+                            style: bodyFont(fontSize: 13.5, weight: FontWeight.w700, color: AppColors.accent700),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
