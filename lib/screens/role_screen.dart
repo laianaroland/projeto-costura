@@ -20,6 +20,8 @@ class RoleScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          RoundIconButton(icon: Icons.chevron_left_rounded, onPressed: state.toWelcome),
+          const SizedBox(height: 14),
           Text('Como você vai usar?', style: headingFont(fontSize: 26)),
           const SizedBox(height: 4),
           Text(
