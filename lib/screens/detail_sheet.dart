@@ -226,7 +226,6 @@ class _ServicoOption extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(servico.nome, style: bodyFont(fontSize: 14.5, weight: FontWeight.w700)),
-                        Text(servico.prazo, style: bodyFont(fontSize: 12.5, color: textMuted(0.55))),
                       ],
                     ),
                   ),

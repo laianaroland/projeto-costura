@@ -104,19 +104,17 @@ const kCategorias = ['Ajustes', 'Reformas', 'Sob medida', 'Bordado'];
 class ServicoDetalhe {
   final String id;
   final String nome;
-  final String prazo;
   final int preco;
   const ServicoDetalhe({
     required this.id,
     required this.nome,
-    required this.prazo,
     required this.preco,
   });
 }
 
 List<ServicoDetalhe> servicosDe(Costureira c) => [
-      ServicoDetalhe(id: 'v1', nome: 'Bainha de calça', prazo: 'pronto em 2 dias', preco: c.desde),
-      ServicoDetalhe(id: 'v2', nome: 'Ajuste de cintura', prazo: 'pronto em 3 dias', preco: c.desde + 12),
-      ServicoDetalhe(id: 'v3', nome: 'Trocar zíper', prazo: 'pronto em 2 dias', preco: c.desde + 18),
-      ServicoDetalhe(id: 'v4', nome: 'Reforma completa', prazo: 'pronto em 7 dias', preco: c.desde + 88),
+      ServicoDetalhe(id: 'v1', nome: 'Bainha de calça', preco: c.desde),
+      ServicoDetalhe(id: 'v2', nome: 'Ajuste de cintura', preco: c.desde + 12),
+      ServicoDetalhe(id: 'v3', nome: 'Trocar zíper', preco: c.desde + 18),
+      ServicoDetalhe(id: 'v4', nome: 'Reforma completa', preco: c.desde + 88),
     ];

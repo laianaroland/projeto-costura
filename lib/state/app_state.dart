@@ -439,7 +439,7 @@ class AppState extends ChangeNotifier {
         ? Pedido(
             nome: qtd > 1 ? '${s.nome} × $qtd' : s.nome,
             quem: d.nome,
-            prazo: s.prazo,
+            prazo: 'aguardando resposta da costureira',
             valor: brl(s.preco * qtd + frete),
           )
         : null;
