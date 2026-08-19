@@ -23,11 +23,6 @@ class RoleScreen extends StatelessWidget {
           RoundIconButton(icon: Icons.chevron_left_rounded, onPressed: state.toWelcome),
           const SizedBox(height: 14),
           Text('Como você vai usar?', style: headingFont(fontSize: 26)),
-          const SizedBox(height: 4),
-          Text(
-            'Dá para mudar depois, no seu perfil.',
-            style: bodyFont(fontSize: 14, color: textMuted(0.6)),
-          ),
           const SizedBox(height: 18),
           _RoleOption(
             selected: state.papel == Papel.cliente,
