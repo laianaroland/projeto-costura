@@ -1,10 +1,11 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../theme/app_theme.dart';
 
-/// A simplified, original illustration for the welcome screen — a dress on
-/// a hanger with a stitching thread, echoing the tailor theme of the
-/// original artwork without reproducing its exact vector paths.
+/// The welcome screen hero — reproduced pixel-for-pixel from the original
+/// Claude Design SVG (var(--color-*) tokens swapped for their literal hex
+/// values from [AppColors]).
 class WelcomeIllustration extends StatelessWidget {
   const WelcomeIllustration({super.key});
 
@@ -12,83 +13,58 @@ class WelcomeIllustration extends StatelessWidget {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 360 / 268,
-      child: CustomPaint(painter: _WelcomePainter()),
+      child: SvgPicture.string(_welcomeSvg),
     );
   }
 }
 
-class _WelcomePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width, h = size.height;
-    final backdrop = Paint()..color = AppColors.accent2_200;
-    canvas.drawCircle(Offset(w * 0.54, h * 0.46), w * 0.34, backdrop);
-
-    // hanger
-    final hangerPaint = Paint()
-      ..color = AppColors.accent700
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.round;
-    final hookTop = Offset(w * 0.5, h * 0.1);
-    canvas.drawLine(hookTop, Offset(w * 0.5, h * 0.16), hangerPaint);
-    canvas.drawCircle(Offset(w * 0.5, h * 0.08), h * 0.025, hangerPaint);
-    final hangerPath = Path()
-      ..moveTo(w * 0.28, h * 0.28)
-      ..quadraticBezierTo(w * 0.5, h * 0.12, w * 0.72, h * 0.28);
-    canvas.drawPath(hangerPath, hangerPaint);
-
-    // dress body
-    final dressPaint = Paint()..color = AppColors.accent500;
-    final dress = Path()
-      ..moveTo(w * 0.36, h * 0.3)
-      ..lineTo(w * 0.64, h * 0.3)
-      ..lineTo(w * 0.76, h * 0.86)
-      ..quadraticBezierTo(w * 0.5, h * 0.98, w * 0.24, h * 0.86)
-      ..close();
-    canvas.drawPath(dress, dressPaint);
-
-    // waist band
-    final band = Paint()..color = AppColors.accent700;
-    canvas.drawRect(Rect.fromLTWH(w * 0.34, h * 0.52, w * 0.32, h * 0.045), band);
-
-    // stitching thread swirl
-    final threadPaint = Paint()
-      ..color = AppColors.accent2_600
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.6
-      ..strokeCap = StrokeCap.round;
-    final threadPath = Path()..moveTo(w * 0.14, h * 0.7);
-    for (var i = 0; i < 5; i++) {
-      final dx = w * 0.14 + i * w * 0.05;
-      threadPath.quadraticBezierTo(dx + w * 0.025, h * (i.isEven ? 0.62 : 0.78), dx + w * 0.05, h * 0.7);
-    }
-    canvas.drawPath(threadPath, threadPaint);
-
-    // needle
-    final needlePaint = Paint()
-      ..color = AppColors.neutral700
-      ..strokeWidth = 3
-      ..strokeCap = StrokeCap.round;
-    canvas.drawLine(Offset(w * 0.4, h * 0.66), Offset(w * 0.5, h * 0.58), needlePaint);
-    canvas.drawCircle(Offset(w * 0.5, h * 0.58), 2.6, Paint()..color = AppColors.neutral700);
-
-    // spool
-    final spoolPaint = Paint()..color = AppColors.neutral200;
-    final spoolRect = Rect.fromLTWH(w * 0.78, h * 0.12, w * 0.14, h * 0.18);
-    canvas.drawRRect(RRect.fromRectAndRadius(spoolRect, const Radius.circular(6)), spoolPaint);
-    final spoolLines = Paint()
-      ..color = AppColors.neutral400
-      ..strokeWidth = 2;
-    for (var i = 1; i < 4; i++) {
-      final y = spoolRect.top + spoolRect.height * i / 4;
-      canvas.drawLine(Offset(spoolRect.left + 4, y), Offset(spoolRect.right - 4, y), spoolLines);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _WelcomePainter oldDelegate) => false;
-}
+const _welcomeSvg = '''
+<svg viewBox="0 0 360 268" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="196" cy="118" r="122" fill="#FBDEE1"/>
+  <g opacity=".75">
+    <rect x="286" y="42" width="52" height="64" rx="10" fill="#F1EBE3" transform="rotate(9 312 74)"/>
+    <path d="M296 62h32M296 76h24M296 90h30" stroke="#C2B8AB" stroke-width="3" stroke-linecap="round" transform="rotate(9 312 74)"/>
+    <rect x="298" y="106" width="46" height="56" rx="10" fill="#F1EBE3" transform="rotate(-7 320 134)"/>
+    <path d="M308 124h26M308 138h18" stroke="#C2B8AB" stroke-width="3" stroke-linecap="round" transform="rotate(-7 320 134)"/>
+  </g>
+  <path d="M30 152q18-22 36 0l8 48q-26 12-52 0z" fill="#DED6CB"/>
+  <circle cx="48" cy="140" r="10" fill="#DED6CB"/>
+  <path d="M48 200v30" stroke="#C2B8AB" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="48" cy="232" rx="18" ry="5" fill="#DED6CB"/>
+  <circle cx="196" cy="70" r="46" fill="#2F2B26"/>
+  <circle cx="158" cy="94" r="31" fill="#2F2B26"/>
+  <circle cx="234" cy="94" r="31" fill="#2F2B26"/>
+  <path d="M164 132q32 22 64 0l-6-46h-52z" fill="#2F2B26"/>
+  <circle cx="196" cy="102" r="35" fill="#D9A179"/>
+  <path d="M162 84q34-26 68 0" fill="none" stroke="#7B86D8" stroke-width="11" stroke-linecap="round"/>
+  <rect x="172" y="96" width="22" height="15" rx="7" fill="none" stroke="#5E69BD" stroke-width="3"/>
+  <rect x="200" y="96" width="22" height="15" rx="7" fill="none" stroke="#5E69BD" stroke-width="3"/>
+  <path d="M194 103h6" stroke="#5E69BD" stroke-width="3"/>
+  <path d="M188 122q8 6 16 0" fill="none" stroke="#6b4426" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="168" cy="116" r="6" fill="#C4855C" opacity=".7"/>
+  <circle cx="224" cy="116" r="6" fill="#C4855C" opacity=".7"/>
+  <path d="M158 152q38-16 76 0l10 62h-96z" fill="#7B86D8"/>
+  <path d="M170 146v70M196 142v76M222 146v70M156 172h82M154 192h88" stroke="#47519A" stroke-width="3" opacity=".5"/>
+  <path d="M162 158q-30 18-38 44" fill="none" stroke="#D9A179" stroke-width="19" stroke-linecap="round"/>
+  <path d="M232 158q28 16 30 44" fill="none" stroke="#D9A179" stroke-width="19" stroke-linecap="round"/>
+  <path d="M236 150q22 26 14 58" fill="none" stroke="#5E69BD" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 12"/>
+  <rect x="205" y="148" width="18" height="22" rx="6" fill="#D67C88"/>
+  <rect x="100" y="168" width="132" height="34" rx="17" fill="#DFE3FB"/>
+  <rect x="198" y="168" width="34" height="48" rx="15" fill="#DFE3FB"/>
+  <rect x="100" y="180" width="34" height="34" rx="14" fill="#DFE3FB"/>
+  <rect x="94" y="206" width="146" height="24" rx="12" fill="#C3CAF4"/>
+  <circle cx="216" cy="186" r="11" fill="#7B86D8"/>
+  <circle cx="117" cy="192" r="8" fill="#7B86D8"/>
+  <path d="M117 202v14" stroke="#2F2B26" stroke-width="3" stroke-linecap="round"/>
+  <path d="M0 232h360" stroke="#DED6CB" stroke-width="5" stroke-linecap="round"/>
+  <path d="M112 232q100-26 196-2v18q-96-16-196 6z" fill="#E79BA5"/>
+  <path d="M126 236q92-20 178-2M124 248q94-20 180-4" stroke="#BB5E6B" stroke-width="3" opacity=".55" fill="none"/>
+  <ellipse cx="306" cy="240" rx="16" ry="14" fill="#F4C1C7"/>
+  <rect x="18" y="196" width="30" height="36" rx="9" fill="#7B86D8"/>
+  <rect x="14" y="192" width="38" height="9" rx="4" fill="#47519A"/>
+  <rect x="14" y="226" width="38" height="9" rx="4" fill="#47519A"/>
+</svg>
+''';
 
 /// Empty-state / "nothing here yet" illustration: a soft dashed circle with
 /// a centered icon, reused across the empty search and empty orders states.
