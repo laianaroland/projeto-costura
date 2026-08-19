@@ -77,8 +77,6 @@ class DetailSheet extends StatelessWidget {
                         const SizedBox(height: 16),
                         const Row(
                           children: [
-                            _FactCard(label: 'PRAZO MÉDIO', value: '3 dias'),
-                            SizedBox(width: 10),
                             _FactCard(label: 'ATENDE', value: 'Seg a sáb'),
                             SizedBox(width: 10),
                             _FactCard(label: 'ENTREGA', value: 'Retira ou leva'),
