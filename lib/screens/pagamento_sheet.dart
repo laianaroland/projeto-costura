@@ -47,8 +47,14 @@ class PagamentoSheet extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(sel.nome, style: bodyFont(fontSize: 14)),
-                                Text(brl(sel.preco), style: bodyFont(fontSize: 14, weight: FontWeight.w700)),
+                                Text(
+                                  state.quantidade > 1 ? '${sel.nome} × ${state.quantidade}' : sel.nome,
+                                  style: bodyFont(fontSize: 14),
+                                ),
+                                Text(
+                                  brl(sel.preco * state.quantidade),
+                                  style: bodyFont(fontSize: 14, weight: FontWeight.w700),
+                                ),
                               ],
                             ),
                           ),

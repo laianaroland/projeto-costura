@@ -91,7 +91,10 @@ class DetailSheet extends StatelessWidget {
                           _ServicoOption(
                             servico: v,
                             selected: sel?.id == v.id,
+                            quantidade: state.quantidade,
                             onTap: () => state.selecionarServico(v.id),
+                            onInc: state.incQuantidade,
+                            onDec: state.decQuantidade,
                           ),
                           const SizedBox(height: 9),
                         ],
@@ -188,37 +191,82 @@ class _FactCard extends StatelessWidget {
 class _ServicoOption extends StatelessWidget {
   final ServicoDetalhe servico;
   final bool selected;
+  final int quantidade;
   final VoidCallback onTap;
-  const _ServicoOption({required this.servico, required this.selected, required this.onTap});
+  final VoidCallback onInc;
+  final VoidCallback onDec;
+
+  const _ServicoOption({
+    required this.servico,
+    required this.selected,
+    required this.quantidade,
+    required this.onTap,
+    required this.onInc,
+    required this.onDec,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: selected ? AppColors.accent100 : AppColors.surface,
       borderRadius: BorderRadius.circular(AppRadius.md),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(13),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: selected ? AppColors.accent : Colors.transparent, width: 2),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      child: Container(
+        padding: const EdgeInsets.all(13),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(color: selected ? AppColors.accent : Colors.transparent, width: 2),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              onTap: onTap,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(servico.nome, style: bodyFont(fontSize: 14.5, weight: FontWeight.w700)),
+                        Text(servico.prazo, style: bodyFont(fontSize: 12.5, color: textMuted(0.55))),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    brl(servico.preco * (selected ? quantidade : 1)),
+                    style: headingFont(fontSize: 17),
+                  ),
+                ],
+              ),
+            ),
+            if (selected) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(border: Border(top: BorderSide(color: AppColors.divider))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(servico.nome, style: bodyFont(fontSize: 14.5, weight: FontWeight.w700)),
-                    Text(servico.prazo, style: bodyFont(fontSize: 12.5, color: textMuted(0.55))),
+                    Text('Quantidade', style: bodyFont(fontSize: 13, weight: FontWeight.w700)),
+                    Row(
+                      children: [
+                        RoundStepperButton(icon: Icons.remove, onPressed: onDec),
+                        SizedBox(
+                          width: 34,
+                          child: Text(
+                            '$quantidade',
+                            textAlign: TextAlign.center,
+                            style: headingFont(fontSize: 16),
+                          ),
+                        ),
+                        RoundStepperButton(icon: Icons.add, onPressed: onInc),
+                      ],
+                    ),
                   ],
                 ),
               ),
-              Text(brl(servico.preco), style: headingFont(fontSize: 17)),
             ],
-          ),
+          ],
         ),
       ),
     );

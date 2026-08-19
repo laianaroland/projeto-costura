@@ -35,6 +35,7 @@ class AppState extends ChangeNotifier {
   int raio = 5;
   bool loading = false;
   String? servicoSel;
+  int quantidade = 1;
   Entrega entrega = Entrega.retirar;
   FormaPagamento pagamento = FormaPagamento.pix;
   Pedido? pedido;
@@ -359,6 +360,7 @@ class AppState extends ChangeNotifier {
   void abrirDetalhe(String id) {
     openId = id;
     servicoSel = null;
+    quantidade = 1;
     notifyListeners();
   }
 
@@ -369,11 +371,23 @@ class AppState extends ChangeNotifier {
 
   void selecionarServico(String id) {
     servicoSel = id;
+    quantidade = 1;
     notifyListeners();
   }
 
-  String get selLabel => sel?.nome ?? 'Escolha um serviço';
-  String get selTotal => sel != null ? brl(sel!.preco) : '—';
+  void incQuantidade() {
+    quantidade++;
+    notifyListeners();
+  }
+
+  void decQuantidade() {
+    quantidade = math.max(1, quantidade - 1);
+    notifyListeners();
+  }
+
+  String get selLabel =>
+      sel != null ? (quantidade > 1 ? '${sel!.nome} × $quantidade' : sel!.nome) : 'Escolha um serviço';
+  String get selTotal => sel != null ? brl(sel!.preco * quantidade) : '—';
 
   void toPagamento() {
     if (sel == null) return flash('Toque em um serviço para escolher');
@@ -388,7 +402,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  int get total => (sel?.preco ?? 0) + frete;
+  int get total => (sel?.preco ?? 0) * quantidade + frete;
 
   void escolherEntrega(Entrega e) {
     entrega = e;
@@ -419,9 +433,15 @@ class AppState extends ChangeNotifier {
   void confirmar() {
     final s = sel;
     final d = dp;
+    final qtd = quantidade;
     screen = AppScreen.sucesso;
     pedido = (s != null && d != null)
-        ? Pedido(nome: s.nome, quem: d.nome, prazo: s.prazo, valor: brl(s.preco + frete))
+        ? Pedido(
+            nome: qtd > 1 ? '${s.nome} × $qtd' : s.nome,
+            quem: d.nome,
+            prazo: s.prazo,
+            valor: brl(s.preco * qtd + frete),
+          )
         : null;
     notifyListeners();
   }
