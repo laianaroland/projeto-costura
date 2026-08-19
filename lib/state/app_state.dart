@@ -34,8 +34,8 @@ class AppState extends ChangeNotifier {
   String? filtro;
   int raio = 5;
   bool loading = false;
-  String? servicoSel;
-  int quantidade = 1;
+  /// Services picked for the current quote request: service id → quantity.
+  Map<String, int> itensCarrinho = {};
   Entrega entrega = Entrega.retirar;
   FormaPagamento pagamento = FormaPagamento.pix;
   Pedido? pedido;
@@ -318,13 +318,18 @@ class AppState extends ChangeNotifier {
     return d == null ? const [] : servicosDe(d);
   }
 
-  ServicoDetalhe? get sel {
-    if (servicoSel == null) return null;
-    for (final v in svcsDoDetalhe) {
-      if (v.id == servicoSel) return v;
-    }
-    return null;
-  }
+  /// Selected services for the current quote, in catalog order, paired with
+  /// their quantity.
+  List<({ServicoDetalhe servico, int qtd})> get itensSelecionados => svcsDoDetalhe
+      .where((v) => itensCarrinho.containsKey(v.id))
+      .map((v) => (servico: v, qtd: itensCarrinho[v.id]!))
+      .toList();
+
+  int get subtotalServicos =>
+      itensSelecionados.fold(0, (acc, it) => acc + it.servico.preco * it.qtd);
+
+  bool servicoSelecionado(String id) => itensCarrinho.containsKey(id);
+  int quantidadeDoServico(String id) => itensCarrinho[id] ?? 0;
 
   int get frete => entrega == Entrega.receber ? 9 : 0;
 
@@ -359,8 +364,7 @@ class AppState extends ChangeNotifier {
 
   void abrirDetalhe(String id) {
     openId = id;
-    servicoSel = null;
-    quantidade = 1;
+    itensCarrinho = {};
     notifyListeners();
   }
 
@@ -369,28 +373,48 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selecionarServico(String id) {
-    servicoSel = id;
-    quantidade = 1;
+  /// Adds/removes a service from the quote. Starts at quantity 1 when added.
+  void toggleItemCarrinho(String id) {
+    itensCarrinho = Map.of(itensCarrinho);
+    if (itensCarrinho.containsKey(id)) {
+      itensCarrinho.remove(id);
+    } else {
+      itensCarrinho[id] = 1;
+    }
     notifyListeners();
   }
 
-  void incQuantidade() {
-    quantidade++;
+  void incQuantidade(String id) {
+    itensCarrinho = Map.of(itensCarrinho)..[id] = (itensCarrinho[id] ?? 0) + 1;
     notifyListeners();
   }
 
-  void decQuantidade() {
-    quantidade = math.max(1, quantidade - 1);
+  /// Decrementing past 1 removes the service from the quote entirely.
+  void decQuantidade(String id) {
+    final atual = itensCarrinho[id] ?? 0;
+    itensCarrinho = Map.of(itensCarrinho);
+    if (atual <= 1) {
+      itensCarrinho.remove(id);
+    } else {
+      itensCarrinho[id] = atual - 1;
+    }
     notifyListeners();
   }
 
-  String get selLabel =>
-      sel != null ? (quantidade > 1 ? '${sel!.nome} × $quantidade' : sel!.nome) : 'Escolha um serviço';
-  String get selTotal => sel != null ? brl(sel!.preco * quantidade) : '—';
+  String get selLabel {
+    final itens = itensSelecionados;
+    if (itens.isEmpty) return 'Escolha um serviço';
+    if (itens.length == 1) {
+      final it = itens.first;
+      return it.qtd > 1 ? '${it.servico.nome} × ${it.qtd}' : it.servico.nome;
+    }
+    return '${itens.length} serviços selecionados';
+  }
+
+  String get selTotal => itensSelecionados.isEmpty ? '—' : brl(subtotalServicos);
 
   void toPagamento() {
-    if (sel == null) return flash('Toque em um serviço para escolher');
+    if (itensCarrinho.isEmpty) return flash('Toque em um serviço para escolher');
     screen = AppScreen.pagamento;
     notifyListeners();
   }
@@ -402,7 +426,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  int get total => (sel?.preco ?? 0) * quantidade + frete;
+  int get total => subtotalServicos + frete;
 
   void escolherEntrega(Entrega e) {
     entrega = e;
@@ -424,23 +448,24 @@ class AppState extends ChangeNotifier {
   }
 
   String get pixCodigo =>
-      '00020126BR.GOV.BCB.PIX0136minhacostureira${sel?.id ?? 'x'}5204000053039865802BR6009SAOCARLOS62070503***6304A1B2';
+      '00020126BR.GOV.BCB.PIX0136minhacostureira${itensCarrinho.keys.isNotEmpty ? itensCarrinho.keys.first : 'x'}5204000053039865802BR6009SAOCARLOS62070503***6304A1B2';
 
   void copiarPix() => flash('Código Pix copiado');
 
   String get confirmarLabel => 'Confirmar · ${brl(total)}';
 
   void confirmar() {
-    final s = sel;
+    final itens = itensSelecionados;
     final d = dp;
-    final qtd = quantidade;
     screen = AppScreen.sucesso;
-    pedido = (s != null && d != null)
+    pedido = (itens.isNotEmpty && d != null)
         ? Pedido(
-            nome: qtd > 1 ? '${s.nome} × $qtd' : s.nome,
+            nome: itens
+                .map((it) => it.qtd > 1 ? '${it.servico.nome} × ${it.qtd}' : it.servico.nome)
+                .join(', '),
             quem: d.nome,
             prazo: 'aguardando resposta da costureira',
-            valor: brl(s.preco * qtd + frete),
+            valor: brl(total),
           )
         : null;
     notifyListeners();

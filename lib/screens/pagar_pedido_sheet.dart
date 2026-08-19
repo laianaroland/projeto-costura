@@ -98,7 +98,10 @@ class PagarPedidoSheet extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(state.pedidoNome, style: bodyFont(fontSize: 14)),
+                              Expanded(
+                                child: Text(state.pedidoNome, style: bodyFont(fontSize: 14)),
+                              ),
+                              const SizedBox(width: 8),
                               Text(state.pedidoValor, style: bodyFont(fontSize: 14, weight: FontWeight.w700)),
                             ],
                           ),

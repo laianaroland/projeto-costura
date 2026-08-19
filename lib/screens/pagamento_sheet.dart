@@ -13,7 +13,7 @@ class PagamentoSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
-    final sel = state.sel;
+    final itens = state.itensSelecionados;
 
     return Material(
       color: AppColors.bg,
@@ -41,18 +41,20 @@ class PagamentoSheet extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        if (sel != null)
+                        for (final it in itens)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  state.quantidade > 1 ? '${sel.nome} × ${state.quantidade}' : sel.nome,
-                                  style: bodyFont(fontSize: 14),
+                                Expanded(
+                                  child: Text(
+                                    it.qtd > 1 ? '${it.servico.nome} × ${it.qtd}' : it.servico.nome,
+                                    style: bodyFont(fontSize: 14),
+                                  ),
                                 ),
                                 Text(
-                                  brl(sel.preco * state.quantidade),
+                                  brl(it.servico.preco * it.qtd),
                                   style: bodyFont(fontSize: 14, weight: FontWeight.w700),
                                 ),
                               ],

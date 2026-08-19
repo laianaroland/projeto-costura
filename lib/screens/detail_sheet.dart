@@ -16,7 +16,6 @@ class DetailSheet extends StatelessWidget {
     final c = state.dp;
     if (c == null) return const SizedBox.shrink();
     final servicos = state.svcsDoDetalhe;
-    final sel = state.sel;
 
     return Material(
       color: AppColors.bg,
@@ -88,11 +87,11 @@ class DetailSheet extends StatelessWidget {
                         for (final v in servicos) ...[
                           _ServicoOption(
                             servico: v,
-                            selected: sel?.id == v.id,
-                            quantidade: state.quantidade,
-                            onTap: () => state.selecionarServico(v.id),
-                            onInc: state.incQuantidade,
-                            onDec: state.decQuantidade,
+                            selected: state.servicoSelecionado(v.id),
+                            quantidade: state.quantidadeDoServico(v.id),
+                            onTap: () => state.toggleItemCarrinho(v.id),
+                            onInc: () => state.incQuantidade(v.id),
+                            onDec: () => state.decQuantidade(v.id),
                           ),
                           const SizedBox(height: 9),
                         ],
@@ -221,13 +220,22 @@ class _ServicoOption extends StatelessWidget {
               onTap: onTap,
               child: Row(
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(servico.nome, style: bodyFont(fontSize: 14.5, weight: FontWeight.w700)),
-                      ],
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: selected ? AppColors.accent600 : Colors.transparent,
+                      borderRadius: BorderRadius.circular(7),
+                      border: Border.all(
+                        color: selected ? AppColors.accent600 : AppColors.neutral400,
+                        width: 2,
+                      ),
                     ),
+                    child: selected ? const Icon(Icons.check, size: 14, color: AppColors.bg) : null,
+                  ),
+                  const SizedBox(width: 11),
+                  Expanded(
+                    child: Text(servico.nome, style: bodyFont(fontSize: 14.5, weight: FontWeight.w700)),
                   ),
                   Text(
                     brl(servico.preco * (selected ? quantidade : 1)),
