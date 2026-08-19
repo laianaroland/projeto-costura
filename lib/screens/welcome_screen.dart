@@ -21,12 +21,8 @@ class WelcomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'MINHA COSTUREIRA',
-            style: bodyFont(fontSize: 11, weight: FontWeight.w700, color: AppColors.accent700)
-                .copyWith(letterSpacing: 1.3),
-          ),
-          const SizedBox(height: 14),
+          const _Wordmark(),
+          const SizedBox(height: 16),
           const WelcomeIllustration(),
           const SizedBox(height: 20),
           Text(
@@ -46,4 +42,53 @@ class WelcomeScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Little brand lockup — a stitched-thread badge plus the wordmark, styled
+/// with the display face for more personality than a plain uppercase label.
+class _Wordmark extends StatelessWidget {
+  const _Wordmark();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 30,
+          height: 30,
+          decoration: const BoxDecoration(color: AppColors.accent200, shape: BoxShape.circle),
+          child: CustomPaint(painter: _ThreadBadgePainter()),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          'MINHA COSTUREIRA',
+          style: headingFont(fontSize: 16, weight: FontWeight.w700, color: AppColors.accent700)
+              .copyWith(letterSpacing: 0.6),
+        ),
+      ],
+    );
+  }
+}
+
+class _ThreadBadgePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // A single smooth stitched ribbon, plus one small anchoring stitch dot —
+    // reads cleanly as a mark even at this tiny size.
+    final threadPaint = Paint()
+      ..color = AppColors.accent700
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.4
+      ..strokeCap = StrokeCap.round;
+    final thread = Path()
+      ..moveTo(size.width * 0.22, size.height * 0.7)
+      ..quadraticBezierTo(size.width * 0.3, size.height * 0.28, size.width * 0.5, size.height * 0.4)
+      ..quadraticBezierTo(size.width * 0.7, size.height * 0.52, size.width * 0.78, size.height * 0.28);
+    canvas.drawPath(thread, threadPaint);
+    canvas.drawCircle(Offset(size.width * 0.78, size.height * 0.28), 1.8, Paint()..color = AppColors.accent2_600);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ThreadBadgePainter oldDelegate) => false;
 }
